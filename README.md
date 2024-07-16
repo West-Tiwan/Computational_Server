@@ -1,11 +1,11 @@
-# Computational Server
+# Multithreaded Computational Server
 
-<p>Server with Socket to client made using JAVA</p>
+<p>Multithreaded Server with Socket to connect with clients made using JAVA</p>
 
 ### How to run?
 
 1. Compile & run server
-2. Compile & run client
+2. Compile & run client(multiple)
 
 ### how to end?
 
