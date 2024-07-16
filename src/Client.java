@@ -9,7 +9,8 @@ public class Client {
         try {
             Socket soc = new Socket("localhost", 3000);
             System.out.println("client running\n");
-            PrintWriter pr = new PrintWriter(soc.getOutputStream(), true);
+//            PrintWriter pr = new PrintWriter(soc.getOutputStream(), true);
+            ObjectOutputStream objOut = new ObjectOutputStream(soc.getOutputStream());
             BufferedReader br = new BufferedReader(new InputStreamReader(soc.getInputStream()));
             Scanner sc = new Scanner(System.in);
             Query query = new Query();
@@ -23,7 +24,11 @@ public class Client {
                 query.setA(a);
                 float b = sc.nextFloat();
                 query.setB(b);
-                pr.println(query);
+
+                //serialization of query obj
+                objOut.writeObject(query);
+                objOut.flush();
+//                pr.println(query);
 
                 //waiting for response
                 String indicator = br.readLine();
@@ -50,7 +55,8 @@ public class Client {
 
             // Close resources
             br.close();
-            pr.close();
+            objOut.close();
+//            pr.close();
             soc.close();
         } catch (IOException e) {
             System.out.println(e.toString());

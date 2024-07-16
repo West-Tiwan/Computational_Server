@@ -1,6 +1,5 @@
 import java.net.*;
 import java.io.*;
-import java.util.Scanner;
 
 public class Server {
     public static void main(String[] args) {
@@ -12,14 +11,15 @@ public class Server {
             System.out.println("connection established");
 
             BufferedReader br = new BufferedReader(new InputStreamReader(soc.getInputStream()));
-            Scanner sc = new Scanner(soc.getInputStream());
             PrintWriter pr = new PrintWriter(soc.getOutputStream(),true);
+            ObjectInputStream objIn = new ObjectInputStream(soc.getInputStream());
 
             while (true){
-                String query = br.readLine();
+//                String query = br.readLine();
+                Query query = (Query) objIn.readObject();
                 pr.println("ready");
-                pr.println(query);
-                System.out.println(query);
+                pr.println(query.getA());
+                System.out.println(query.getA());
             }
 
             //closing resources
@@ -29,6 +29,8 @@ public class Server {
         }
         catch (IOException error){
             System.out.println(error.toString());
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
         }
     }
 
