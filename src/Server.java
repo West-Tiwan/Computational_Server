@@ -1,7 +1,7 @@
 import java.net.*;
 import java.io.*;
 
-public class Server {
+public class Server extends Thread {
     //initialize calculator
     static Calculator calc = new Calculator();
 
@@ -10,21 +10,34 @@ public class Server {
             //connecting
             ServerSocket ss = new ServerSocket(3000);
             System.out.println("server running - waiting for client...");
-            Socket soc = ss.accept();
-            System.out.println("connection established");
+            Runnable work = ()->{
+                try {
+                    Socket soc = ss.accept();
+                    System.out.println("connection established");
 
-            BufferedReader br = new BufferedReader(new InputStreamReader(soc.getInputStream()));
-            PrintWriter pr = new PrintWriter(soc.getOutputStream(),true);
-            ObjectInputStream objIn = new ObjectInputStream(soc.getInputStream());
+                    BufferedReader br = new BufferedReader(new InputStreamReader(soc.getInputStream()));
+                    PrintWriter pr = new PrintWriter(soc.getOutputStream(),true);
+                    ObjectInputStream objIn = new ObjectInputStream(soc.getInputStream());
 
-            while (true){
+                    while (true){
 //                String query = br.readLine();
-                Query query = (Query) objIn.readObject();
-                float result = handleChoice(query);
-                pr.println("ready");
-                pr.println(result);
-                System.out.println(result);
-            }
+                        Query query = (Query) objIn.readObject();
+                        float result = handleChoice(query);
+                        pr.println("ready");
+                        pr.println(result);
+                        System.out.println(result);
+                    }
+                } catch (IOException | ClassNotFoundException e) {
+                    throw new RuntimeException(e);
+                }
+            };
+
+            Thread t1 = new Thread(work);
+            Thread t2 = new Thread(work);
+            Thread t3 = new Thread(work);
+            t1.start();
+            t2.start();
+            t3.start();
 
             //closing resources
 //            pr.close();
@@ -33,8 +46,6 @@ public class Server {
         }
         catch (IOException error){
             System.out.println(error.toString());
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
         }
     }
 
