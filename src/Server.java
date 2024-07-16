@@ -1,26 +1,22 @@
 import java.net.*;
 import java.io.*;
+import java.util.function.Consumer;
 
 public class Server extends Thread {
     //initialize calculator
     static Calculator calc = new Calculator();
 
-    public static void main(String[] args) {
-        try{
-            //connecting
-            ServerSocket ss = new ServerSocket(3000);
-            System.out.println("server running - waiting for client...");
-            Runnable work = ()->{
+    public Consumer<Socket> getConsumer(){
+        return (clientSocket)->{
+            try {
+                PrintWriter pr = new PrintWriter(clientSocket.getOutputStream(),true);
                 try {
-                    Socket soc = ss.accept();
                     System.out.println("connection established");
 
-                    BufferedReader br = new BufferedReader(new InputStreamReader(soc.getInputStream()));
-                    PrintWriter pr = new PrintWriter(soc.getOutputStream(),true);
-                    ObjectInputStream objIn = new ObjectInputStream(soc.getInputStream());
+                    BufferedReader br = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+                    ObjectInputStream objIn = new ObjectInputStream(clientSocket.getInputStream());
 
                     while (true){
-//                String query = br.readLine();
                         Query query = (Query) objIn.readObject();
                         float result = handleChoice(query);
                         pr.println("ready");
@@ -30,14 +26,27 @@ public class Server extends Thread {
                 } catch (IOException | ClassNotFoundException e) {
                     throw new RuntimeException(e);
                 }
-            };
+//                pr.close();
+//                clientSocket.close();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        };
+    }
 
-            Thread t1 = new Thread(work);
-            Thread t2 = new Thread(work);
-            Thread t3 = new Thread(work);
-            t1.start();
-            t2.start();
-            t3.start();
+    public static void main(String[] args) {
+
+        Server server = new Server();
+        try{
+            //connecting
+            ServerSocket ss = new ServerSocket(3000);
+            System.out.println("server running - waiting for client...");
+
+            while (true){
+                Socket acceptedSocket = ss.accept();
+                Thread thread = new Thread(()->server.getConsumer().accept(acceptedSocket));
+                thread.start();
+            }
 
             //closing resources
 //            pr.close();
