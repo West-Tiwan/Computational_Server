@@ -2,6 +2,9 @@ import java.net.*;
 import java.io.*;
 
 public class Server {
+    //initialize calculator
+    static Calculator calc = new Calculator();
+
     public static void main(String[] args) {
         try{
             //connecting
@@ -17,9 +20,10 @@ public class Server {
             while (true){
 //                String query = br.readLine();
                 Query query = (Query) objIn.readObject();
+                float result = handleChoice(query);
                 pr.println("ready");
-                pr.println(query.getA());
-                System.out.println(query.getA());
+                pr.println(result);
+                System.out.println(result);
             }
 
             //closing resources
@@ -34,26 +38,22 @@ public class Server {
         }
     }
 
-    public static class calculator{
-
-        public float add(float a,float b){
-            return (a+b);
-        }
-
-        public float sub(float a,float b){
-            return (a-b);
-        }
-
-        public float multi(float a,float b){
-            return (a*b);
-        }
-
-        public float div(float a,float b){
-            return (a/b);
-        }
-
-        public float mod(float a,float b){
-            return (a%b);
+    static float handleChoice(Query query){
+        int choice = query.getChoice();
+        float a = query.getA();
+        float b = query.getB();
+        if (choice == 1){
+            return calc.add(query.getA(), query.getB());
+        } else if (choice == 2) {
+            return calc.sub(a, b);
+        } else if (choice == 3) {
+            return calc.multi(a, b);
+        } else if (choice == 4) {
+            return calc.div(a, b);
+        } else if (choice == 5) {
+            return calc.mod(a, b);
+        } else {
+            return -1;
         }
     }
 }
