@@ -20,8 +20,10 @@ public class Client {
                 System.out.print("Choose what you want to do:\n    1.Add\n    2.Subtract\n    3.Multiply\n    4.Divide\n    5.Modulo\n\nEnter your choice: ");
                 int choice = sc.nextInt();
                 query.setChoice(choice);
+                System.out.print("\n\nEnter first number: ");
                 float a = sc.nextFloat();
                 query.setA(a);
+                System.out.print("\n\nEnter second number: ");
                 float b = sc.nextFloat();
                 query.setB(b);
 
