@@ -27,7 +27,7 @@ public class Client {
                 float b = sc.nextFloat();
                 query.setB(b);
 
-                //serialization of query obj
+                //serialization of query object
                 objOut.reset();
                 objOut.writeObject(query);
                 objOut.flush();
